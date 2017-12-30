@@ -9,7 +9,7 @@ docker run -p 27017:27017 --restart=always -v db:/data/db mongo:3.2
 
 # Setting-up application:
 Build:
-docker build -t "rest_api_srv" .
+docker build -t "rest-api" .
 
 Start-up:
 docker run -p 5002:5002 --restart=always rest-api
