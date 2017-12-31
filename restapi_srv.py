@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
+from pymjq import JobQueue
 import flask
 import pymongo
 import json
@@ -10,8 +11,14 @@ import time
 from time import strftime, localtime
 
 
-client = MongoClient('0.0.0.0', 27017)
+client = MongoClient('35.199.81.127', 27017)
 db = client.boiler_DB
+
+blinderdb = client.blinder_queue
+jobqueue = JobQueue(blinderdb)
+jobqueue.valid()
+
+
 
 status = db.status
 history = db.history
@@ -89,12 +96,34 @@ class temperature(Resource):
             json_status = t
             return {'heaterTemperature': json_status['tempc_avg']}
 
+class brinq_down(Resource):
+    def get(self):
+        jobqueue.pub({"message": "brinq_down"}) # add a job to queue
+        return {'command': 'ok'}
+
+class brinq_up(Resource):
+    def get(self):
+        jobqueue.pub({"message": "brinq_up"}) # add a job to queue
+        return {'command': 'ok'}
+
+class brinq_neutral(Resource):
+    def get(self):
+        jobqueue.pub({"message": "brinq_neutral"}) # add a job to queue
+        return {'command': 'ok'}
+
+
+
 api.add_resource(Status, '/api/status') # Route_1
 api.add_resource(history, '/api/history') # Route_2
 api.add_resource(command, '/api/order') # Route_3
 api.add_resource(on,'/api/order/on') # Route_4
 api.add_resource(off,'/api/order/off') # Route_5
 api.add_resource(temperature,'/api/temperature') # Route_6
+
+api.add_resource(brinq_down,'/api/order/blinder/brinq_down') # Blinder queue - Route_7
+api.add_resource(brinq_up,'/api/order/blinder/brinq_up') # Blinder queue - Route_7
+api.add_resource(brinq_neutral,'/api/order/blinder/brinq_neutral') # Blinder queue - Route_7
+
 
 if __name__ == '__main__':
      app.run(
