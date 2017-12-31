@@ -5,7 +5,7 @@ This code enables a local raspberry-pi to connect to a remote mongo-db. With tha
 Set-up the server: 
 
 # Setting-up mongo: 
-docker run -p 27017:27017 --restart=always -v db:/data/db mongo:3.2
+docker run -p 27017:27017 --restart=always -v db:/data/db mongo:2.6 --smallfiles
 
 # Setting-up application:
 Build:
