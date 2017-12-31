@@ -11,7 +11,7 @@ import time
 from time import strftime, localtime
 
 
-client = MongoClient('35.199.81.127', 27017)
+client = MongoClient('0.0.0.0', 27017)
 db = client.boiler_DB
 
 blinderdb = client.blinder_queue
