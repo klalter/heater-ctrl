@@ -9,13 +9,16 @@ from flask_jsonpify import jsonify
 import time
 from time import strftime, localtime
 from mongoqueue import MongoQueue
+import paho.mqtt.client as paho
 
-client = MongoClient('0.0.0.0', 27017)
-db = client.boiler_DB
+clientMongo = MongoClient('35.199.81.127', 27017)
+db = clientMongo.boiler_DB
 
-blinderdb = client.blinderdb
+broker="35.199.81.127"
+client= paho.Client("gcp-restAPI-001")
+
+blinderdb = clientMongo.blinderdb
 blinder_cmd = blinderdb.blinder_cmd
-
 
 queue = MongoQueue(
     blinder_cmd,
@@ -33,7 +36,7 @@ api = Api(app)
 
 def online_offline():
     #Function to check if connectvitivy between raspberry and DB in cloud
-    db = client.boiler_DB
+    db = clientMongo.boiler_DB
 
     for t in db.heartbeat.find().sort([("_id", pymongo.DESCENDING)]).limit(1):
         if ((time.time()-t['heartbeat'])>15):
@@ -65,6 +68,11 @@ class on(Resource):
             "connect":online_offline()
         }
         post_id = status.insert(post)
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/switch/on/set","true")
+        client.disconnect()
+        
         return {'command': 'on'}
 
 class off(Resource):
@@ -76,6 +84,11 @@ class off(Resource):
             "connect":online_offline()
         }
         post_id = status.insert(post)
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/switch/on/set","false")
+        client.disconnect()
+        
         return {'command': 'off'}
 
 class command(Resource):
@@ -103,63 +116,124 @@ class temperature(Resource):
 class brinq_down(Resource):
     def get(self):
         queue.put({"command": "brinq_down"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderBrinq/command/set","down")
+        client.disconnect()
+        
+        
         return {'command': 'ok'}
 
 class brinq_up(Resource):
     def get(self):
         queue.put({"command": "brinq_up"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderBrinq/command/set","up")
+        client.disconnect()
+        
         return {'command': 'ok'}
 
 class brinq_neutral(Resource):
     def get(self):
         queue.put({"command": "brinq_neutral"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderBrinq/command/set","neutral")
+        client.disconnect()
+        
         return {'command': 'ok'}
 
 class suiteA_down(Resource):
     def get(self):
         queue.put({"command": "suiteA_down"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderMaster/command/set","down")
+        client.disconnect()
+        
         return {'command': 'ok'}
 
 class suiteA_up(Resource):
     def get(self):
         queue.put({"command": "suiteA_up"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderMaster/command/set","up")
+        client.disconnect()
+        
         return {'command': 'ok'}
 
 class suiteA_neutral(Resource):
     def get(self):
         queue.put({"command": "suiteA_neutral"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderMaster/command/set","neutral")
+        client.disconnect()
+        
         return {'command': 'ok'}
-
+    
 class suiteB_down(Resource):
     def get(self):
         queue.put({"command": "suiteB_down"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderMeninas/command/set","down")
+        client.disconnect()
+        
         return {'command': 'ok'}
 
 class suiteB_up(Resource):
     def get(self):
         queue.put({"command": "suiteB_up"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderMeninas/command/set","up")
+        client.disconnect()
+        
         return {'command': 'ok'}
 
 class suiteB_neutral(Resource):
     def get(self):
         queue.put({"command": "suiteB_neutral"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderMeninas/command/set","neutral")
+        client.disconnect()
+        
         return {'command': 'ok'}
-
+    
 class suiteC_down(Resource):
     def get(self):
         queue.put({"command": "suiteC_down"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderHospede/command/set","down")
+        client.disconnect()
+        
         return {'command': 'ok'}
 
 class suiteC_up(Resource):
     def get(self):
         queue.put({"command": "suiteC_up"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderHospede/command/set","up")
+        client.disconnect()
+        
         return {'command': 'ok'}
 
 class suiteC_neutral(Resource):
     def get(self):
         queue.put({"command": "suiteC_neutral"}) # add a job to queue
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225d74/blinderHospede/command/set","neutral")
+        client.disconnect()
+        
         return {'command': 'ok'}
-
+    
 
 api.add_resource(Status, '/api/status') # Route_1
 api.add_resource(history, '/api/history') # Route_2
