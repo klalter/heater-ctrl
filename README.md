@@ -9,3 +9,4 @@ docker build -t "rest-api" .
 
 Start-up:
 docker run -p 5002:5002 --restart=always --name restAPI -d rest-api
+
