@@ -1,0 +1,31 @@
+{
+    "bridge": {
+        "name": "Home-Santos",
+        "username": "CC:22:3D:E3:CE:30",
+        "port": 51826,
+        "pin": "123-45-555"
+    },
+    "description": "Home Santos - MQTT and Smartthings integration.",
+    "accessories": [
+        {
+            "accessory": "mqtt-temperature-tasmota",
+            "name": "Aquecedor Temperatura",
+            "url": "mqtt://192.168.100.200",
+            "topic": "homie/2c3ae8225d74/heater/temp"
+        },
+        
+        {
+            "accessory": "mqtt-switch-tasmota",
+            "name": "Aquecedor",
+            "url": "mqtt://192.168.100.200",
+            "topics": {
+                "statusGet": "homie/2c3ae8225d74/switch/on",
+                "statusSet": "homie/2c3ae8225d74/switch/on/set"
+            },
+            "onValue": "true",
+            "offValue": "false"
+        }
+    ],
+    "platforms": [
+        ]
+}
