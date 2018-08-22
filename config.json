@@ -11,21 +11,77 @@
             "accessory": "mqtt-temperature-tasmota",
             "name": "Aquecedor Temperatura",
             "url": "mqtt://192.168.100.200",
-            "topic": "homie/2c3ae8225d74/heater/temp"
+            "topic": "homie/2c3ae8225d74/heater/degrees"
         },
         
         {
-            "accessory": "mqtt-switch-tasmota",
+            "accessory": "mqttswitch",
             "name": "Aquecedor",
             "url": "mqtt://192.168.100.200",
             "topics": {
-                "statusGet": "homie/2c3ae8225d74/switch/on",
-                "statusSet": "homie/2c3ae8225d74/switch/on/set"
+                "statusGet": "homie/2c3ae8225d74/heater/switch/on",
+                "statusSet": "homie/2c3ae8225d74/heater/switch/on/set"
             },
             "onValue": "true",
             "offValue": "false"
+        },
+        {
+            "accessory": "BlindsHTTP",
+            "name": "Brinquedoteca",
+            "up_url": "http://35.199.81.127:5002/api/order/blinder/brinq_up",
+            "down_url": "http://35.199.81.127:5002/api/order/blinder/brinq_down",
+            "stop_url": "http://35.199.81.127:5002/api/order/blinder/brinq_neutral",
+            "motion_time": "9",
+            "http_method": "GET",
+            "trigger_stop_at_boundaries": false
+        },
+        {
+            "accessory": "BlindsHTTP",
+            "name": "Suite Master",
+            "up_url": "http://35.199.81.127:5002/api/order/blinder/suiteA_up",
+            "down_url": "http://35.199.81.127:5002/api/order/blinder/suiteA_down",
+            "stop_url": "http://35.199.81.127:5002/api/order/blinder/suiteA_neutral",
+            "motion_time": "12",
+            "http_method": "GET",
+            "trigger_stop_at_boundaries": false
+        },
+        {
+            "accessory": "BlindsHTTP",
+            "name": "Suite Meninas",
+            "up_url": "http://35.199.81.127:5002/api/order/blinder/suiteB_up",
+            "down_url": "http://35.199.81.127:5002/api/order/blinder/suiteB_down",
+            "stop_url": "http://35.199.81.127:5002/api/order/blinder/suiteB_neutral",
+            "motion_time": "12",
+            "http_method": "GET",
+            "trigger_stop_at_boundaries": false
+        },
+        {
+            "accessory": "BlindsHTTP",
+            "name": "Suite Hospedes",
+            "up_url": "http://35.199.81.127:5002/api/order/blinder/suiteC_up",
+            "down_url": "http://35.199.81.127:5002/api/order/blinder/suiteC_down",
+            "stop_url": "http://35.199.81.127:5002/api/order/blinder/suiteC_neutral",
+            "motion_time": "12",
+            "http_method": "GET",
+            "trigger_stop_at_boundaries": false
         }
+                
     ],
+
     "platforms": [
+            {
+                "platform": "SmartThings",
+                "name": "SmartThings",
+                "app_url": "https://graph-na02-useast1.api.smartthings.com:443/api/smartapps/installations/",
+                "app_id": "f54da193-cc54-4e6a-babe-fd46f8b13b42",
+                "access_token": "f019116b-9c21-4d24-8c69-50c59b2606be",
+                "polling_seconds": 3600,
+                "update_method": "direct",
+                "direct_ip": "192.168.100.200",
+                "direct_port": 8000,
+                "api_seconds": 30
+            }
         ]
-}
+    }
+
+
