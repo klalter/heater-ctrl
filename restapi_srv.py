@@ -15,34 +15,6 @@ client= paho.Client("gcp-restAPI-001")
 app = Flask(__name__)
 api = Api(app)
 
-class on(Resource):
-    def get(self):
-        post = {
-            "res_actual":1,
-            "timestamp":(strftime("%d-%m-%Y %H:%M:%S", localtime())),
-            "source":'api'
-        }
-
-        client.connect(broker)
-        client.publish("homie/2c3ae8225d74/heater/switch/set","true")
-        client.disconnect()
-
-        return {'command': 'on'}
-
-class off(Resource):
-    def get(self):
-        post = {
-            "res_actual":0,
-            "timestamp":(strftime("%d-%m-%Y %H:%M:%S", localtime())),
-            "source":'api'
-        }
-        
-        client.connect(broker)
-        client.publish("homie/2c3ae8225d74/heater/switch/set","false")
-        client.disconnect()
-        
-        return {'command': 'off'}
-
 class brinq_down(Resource):
     def get(self):
         
@@ -151,10 +123,43 @@ class suiteC_neutral(Resource):
         client.disconnect()
         
         return {'command': 'ok'}
-    
 
-api.add_resource(on,'/api/order/on') # Route_4
-api.add_resource(off,'/api/order/off') # Route_5
+ class heater_on(Resource):
+    def get(self):
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225c6a/heater/switch/set","true")
+        client.disconnect()
+        
+        return {'command': 'ok'}   
+
+ class heater_off(Resource):
+    def get(self):
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225c6a/heater/switch/set","false")
+        client.disconnect()
+        
+        return {'command': 'ok'}
+
+ class compress_on(Resource):
+    def get(self):
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225c6a/compressor/switch/set","true")
+        client.disconnect()
+        
+        return {'command': 'ok'}
+
+ class compress_off(Resource):
+    def get(self):
+        
+        client.connect(broker)
+        client.publish("homie/2c3ae8225c6a/compressor/switch/set","false")
+        client.disconnect()
+        
+        return {'command': 'ok'}
+
 
 api.add_resource(brinq_down,'/api/order/blinder/brinq_down') # Blinder queue - Route_7
 api.add_resource(brinq_up,'/api/order/blinder/brinq_up') # Blinder queue - Route_8
@@ -171,6 +176,12 @@ api.add_resource(suiteB_neutral,'/api/order/blinder/suiteB_neutral') # Blinder q
 api.add_resource(suiteC_down,'/api/order/blinder/suiteC_down') # Blinder queue - Route_16
 api.add_resource(suiteC_up,'/api/order/blinder/suiteC_up') # Blinder queue - Route_17
 api.add_resource(suiteC_neutral,'/api/order/blinder/suiteC_neutral') # Blinder queue - Route_18
+
+api.add_resource(compress_on,'/api/order/compress/on') # Compressor ON
+api.add_resource(compress_off,'/api/order/compress/off') # Compressor OFF
+
+api.add_resource(heater_on,'/api/order/heater/on') # Compressor ON
+api.add_resource(heater_off,'/api/order/heater/off') # Compressor OFF
 
 if __name__ == '__main__':
      app.run(
