@@ -9,156 +9,145 @@ import time
 from time import strftime, localtime
 import paho.mqtt.client as paho
 
+
+#####################
+#JSON Objects
+class jSONObj:
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
+
+#####################  
+
+#####################
+#MQTT Section
+
 broker="35.199.81.127"
+
+#broker="192.168.1.200"
+
+heater = jSONObj();
+compressor = jSONObj();
+
+
+heater.status = "false";
+heater.temperature = 0;
+compressor.status = "false";
+
+def on_message_heater_status(mosq, obj, msg):
+    heater.status = str(msg.payload)
+    print("HEATER STATUS: " + heater.status)
+
+def on_message_heater_temp(mosq, obj, msg):
+    temperature = json.loads(str(msg.payload))
+    temperature = temperature['DS18B20']['Temperature']
+    heater.temperature = temperature
+    print("HEATER TEMPERATURE: " + str(heater.temperature))
+
+def on_message_compressor(mosq, obj, msg):
+    print("COMPRESSOR: " + str(msg.payload))
+    compressor.status = str(msg.payload)
+
 client= paho.Client("gcp-restAPI-001")
 
+client.message_callback_add("homie/2c3ae8225c6a/heater/switch", on_message_heater_status)
+client.message_callback_add("homie/2c3ae8225c6a/heater/degrees", on_message_heater_temp)
+client.message_callback_add("homie/2c3ae8225c6a/compressor/switch", on_message_compressor)
+
+#####################
+
+#####################
+#FLASK App
 app = Flask(__name__)
 api = Api(app)
 
 class brinq_down(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderBrinq/command/set","down")
-        client.disconnect()
-        
-        
         return {'command': 'ok'}
 
 class brinq_up(Resource):
-    def get(self):
-        
-        client.connect(broker)
+    def get(self):    
         client.publish("homie/2c3ae8225d74/blinderBrinq/command/set","up")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
 class brinq_neutral(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderBrinq/command/set","neutral")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
 class suiteA_down(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderMaster/command/set","down")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
 class suiteA_up(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderMaster/command/set","up")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
 class suiteA_neutral(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderMaster/command/set","neutral")
-        client.disconnect()
-        
         return {'command': 'ok'}
     
 class suiteB_down(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderMeninas/command/set","down")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
 class suiteB_up(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderMeninas/command/set","up")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
 class suiteB_neutral(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderMeninas/command/set","neutral")
-        client.disconnect()
-        
         return {'command': 'ok'}
     
 class suiteC_down(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderHospede/command/set","down")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
 class suiteC_up(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderHospede/command/set","up")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
 class suiteC_neutral(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225d74/blinderHospede/command/set","neutral")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
- class heater_on(Resource):
-    def get(self):
-        
-        client.connect(broker)
+class heater_on(Resource):
+    def get(self): 
         client.publish("homie/2c3ae8225c6a/heater/switch/set","true")
-        client.disconnect()
-        
         return {'command': 'ok'}   
 
- class heater_off(Resource):
+class heater_off(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225c6a/heater/switch/set","false")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
- class compress_on(Resource):
+class heater_status(Resource):
     def get(self):
-        
-        client.connect(broker)
+        return heater.toJSON()
+
+class compress_on(Resource):
+    def get(self):
         client.publish("homie/2c3ae8225c6a/compressor/switch/set","true")
-        client.disconnect()
-        
         return {'command': 'ok'}
 
- class compress_off(Resource):
+class compress_off(Resource):
     def get(self):
-        
-        client.connect(broker)
         client.publish("homie/2c3ae8225c6a/compressor/switch/set","false")
-        client.disconnect()
-        
         return {'command': 'ok'}
+    
+class compress_status(Resource):
+    def get(self):
+        return compressor.toJSON()
 
 
 api.add_resource(brinq_down,'/api/order/blinder/brinq_down') # Blinder queue - Route_7
@@ -177,13 +166,17 @@ api.add_resource(suiteC_down,'/api/order/blinder/suiteC_down') # Blinder queue -
 api.add_resource(suiteC_up,'/api/order/blinder/suiteC_up') # Blinder queue - Route_17
 api.add_resource(suiteC_neutral,'/api/order/blinder/suiteC_neutral') # Blinder queue - Route_18
 
-api.add_resource(compress_on,'/api/order/compress/on') # Compressor ON
-api.add_resource(compress_off,'/api/order/compress/off') # Compressor OFF
+api.add_resource(compress_on,'/api/order/compressor/on') # Compressor ON
+api.add_resource(compress_off,'/api/order/compressor/off') # Compressor OFF
+api.add_resource(compress_status,'/api/order/compressor/status') # Status - ON or OFF
 
 api.add_resource(heater_on,'/api/order/heater/on') # Compressor ON
 api.add_resource(heater_off,'/api/order/heater/off') # Compressor OFF
+api.add_resource(heater_status,'/api/order/heater/status') # Status - ON/OFF and Temperature
+#####################
 
 if __name__ == '__main__':
-     app.run(
-         host = '0.0.0.0',
-         port=5002)
+    client.connect(broker)
+    client.subscribe("#", 0)
+    client.loop_start()
+    app.run(host = '0.0.0.0',port=5002)
