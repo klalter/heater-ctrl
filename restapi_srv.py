@@ -16,13 +16,17 @@ class jSONObj:
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 
             sort_keys=True, indent=4)
-
+    
+class jSONPayLoad(object):
+    def __init__(self, j):
+        self.__dict__ = json.loads(j)
 #####################  
 
 #####################
 #MQTT Section
 
 broker="35.199.81.127"
+device_id = "2c3ae8225c6a"
 
 #broker="192.168.1.200"
 
@@ -50,9 +54,9 @@ def on_message_compressor(mosq, obj, msg):
 
 client= paho.Client("gcp-restAPI-001")
 
-client.message_callback_add("homie/2c3ae8225c6a/heater/switch", on_message_heater_status)
-client.message_callback_add("homie/2c3ae8225c6a/heater/degrees", on_message_heater_temp)
-client.message_callback_add("homie/2c3ae8225c6a/compressor/switch", on_message_compressor)
+client.message_callback_add("homie/" + device_id + "/heater/switch", on_message_heater_status)
+client.message_callback_add("homie/" + device_id + "/heater/degrees", on_message_heater_temp)
+client.message_callback_add("homie/" + device_id + "/compressor/switch", on_message_compressor)
 
 #####################
 
@@ -63,72 +67,72 @@ api = Api(app)
 
 class brinq_down(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderBrinq/command/set","down")
+        client.publish("homie/" + device_id + "/blinderBrinq/command/set","down")
         return {'command': 'ok'}
 
 class brinq_up(Resource):
     def get(self):    
-        client.publish("homie/2c3ae8225d74/blinderBrinq/command/set","up")
+        client.publish("homie/" + device_id + "/blinderBrinq/command/set","up")
         return {'command': 'ok'}
 
 class brinq_neutral(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderBrinq/command/set","neutral")
+        client.publish("homie/" + device_id + "/blinderBrinq/command/set","neutral")
         return {'command': 'ok'}
 
 class suiteA_down(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderMaster/command/set","down")
+        client.publish("homie/" + device_id + "/blinderMaster/command/set","down")
         return {'command': 'ok'}
 
 class suiteA_up(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderMaster/command/set","up")
+        client.publish("homie/" + device_id + "/blinderMaster/command/set","up")
         return {'command': 'ok'}
 
 class suiteA_neutral(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderMaster/command/set","neutral")
+        client.publish("homie/" + device_id + "/blinderMaster/command/set","neutral")
         return {'command': 'ok'}
     
 class suiteB_down(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderMeninas/command/set","down")
+        client.publish("homie/" + device_id + "/blinderMeninas/command/set","down")
         return {'command': 'ok'}
 
 class suiteB_up(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderMeninas/command/set","up")
+        client.publish("homie/" + device_id + "/blinderMeninas/command/set","up")
         return {'command': 'ok'}
 
 class suiteB_neutral(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderMeninas/command/set","neutral")
+        client.publish("homie/" + device_id + "/blinderMeninas/command/set","neutral")
         return {'command': 'ok'}
     
 class suiteC_down(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderHospede/command/set","down")
+        client.publish("homie/" + device_id + "/blinderHospede/command/set","down")
         return {'command': 'ok'}
 
 class suiteC_up(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderHospede/command/set","up")
+        client.publish("homie/" + device_id + "/blinderHospede/command/set","up")
         return {'command': 'ok'}
 
 class suiteC_neutral(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225d74/blinderHospede/command/set","neutral")
+        client.publish("homie/" + device_id + "/blinderHospede/command/set","neutral")
         return {'command': 'ok'}
 
 class heater_on(Resource):
     def get(self): 
-        client.publish("homie/2c3ae8225c6a/heater/switch/set","true")
+        client.publish("homie/" + device_id + "/heater/switch/set","true")
         return {'command': 'ok'}   
 
 class heater_off(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225c6a/heater/switch/set","false")
+        client.publish("homie/" + device_id + "/heater/switch/set","false")
         return {'command': 'ok'}
 
 class heater_status(Resource):
@@ -137,12 +141,12 @@ class heater_status(Resource):
 
 class compress_on(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225c6a/compressor/switch/set","true")
+        client.publish("homie/" + device_id + "/compressor/switch/set","true")
         return {'command': 'ok'}
 
 class compress_off(Resource):
     def get(self):
-        client.publish("homie/2c3ae8225c6a/compressor/switch/set","false")
+        client.publish("homie/" + device_id + "/compressor/switch/set","false")
         return {'command': 'ok'}
     
 class compress_status(Resource):
